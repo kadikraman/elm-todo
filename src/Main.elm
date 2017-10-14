@@ -9,24 +9,23 @@ import Html.Events exposing (onClick)
 
 
 type alias ToDo =
-    { isDone : Bool
+    { id : Int
+    , isDone : Bool
     , label : String
     }
 
 
 type alias Model =
-    { isChecked : Bool
-    , toDos : List ToDo
+    { toDos : List ToDo
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { isChecked = True
-      , toDos =
-            [ { isDone = True, label = "Chckbox in Elm" }
-            , { isDone = False, label = "Render a list of items" }
-            , { isDone = False, label = "Adding new items" }
+    ( { toDos =
+            [ { id = 0, isDone = True, label = "Chckbox in Elm" }
+            , { id = 1, isDone = False, label = "Render a list of items" }
+            , { id = 2, isDone = False, label = "Adding new items" }
             ]
       }
     , Cmd.none
@@ -38,14 +37,21 @@ init =
 
 
 type Msg
-    = ToggleIsChecked
+    = ToggleIsDone Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ToggleIsChecked ->
-            ( { model | isChecked = not model.isChecked }, Cmd.none )
+        ToggleIsDone id ->
+            ( { model | toDos = List.map (toggle id) model.toDos }, Cmd.none )
+
+
+toggle id todo =
+    if (todo.id == id) then
+        { todo | isDone = not todo.isDone }
+    else
+        todo
 
 
 
@@ -54,7 +60,7 @@ update msg model =
 
 renderTodo : ToDo -> Html Msg
 renderTodo toDo =
-    div []
+    div [ onClick (ToggleIsDone toDo.id), class "todo" ]
         [ input [ type_ "checkbox", checked toDo.isDone ] []
         , text toDo.label
         ]
@@ -63,9 +69,7 @@ renderTodo toDo =
 view : Model -> Html Msg
 view model =
     div [ class "container" ]
-        [ input [ type_ "checkbox", onClick ToggleIsChecked, checked model.isChecked ] []
-        , text "Do the thing"
-        , div [ class "todos" ] [ ul [] (List.map renderTodo model.toDos) ]
+        [ div [ class "todos" ] [ ul [] (List.map renderTodo model.toDos) ]
         ]
 
 

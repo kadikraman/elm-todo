@@ -24,3 +24,10 @@ img {
   margin: 20px;
   text-align: left;
 }
+
+.todo {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
