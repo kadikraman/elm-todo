@@ -1,5 +1,6 @@
 body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande',
+    'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   font-size: 30px;
   margin: 0;
   text-align: center;
@@ -9,4 +10,12 @@ body {
 img {
   margin: 20px 0;
   max-width: 200px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  margin: 50px;
 }
