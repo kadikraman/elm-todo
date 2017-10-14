@@ -19,3 +19,8 @@ img {
   justify-content: center;
   margin: 50px;
 }
+
+.todos {
+  margin: 20px;
+  text-align: left;
+}

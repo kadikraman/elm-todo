@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, img, input)
+import Html exposing (Html, text, div, img, input, ul)
 import Html.Attributes exposing (src, type_, checked, class)
 import Html.Events exposing (onClick)
 
@@ -8,13 +8,29 @@ import Html.Events exposing (onClick)
 ---- MODEL ----
 
 
+type alias ToDo =
+    { isDone : Bool
+    , label : String
+    }
+
+
 type alias Model =
-    { isChecked : Bool }
+    { isChecked : Bool
+    , toDos : List ToDo
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { isChecked = True }, Cmd.none )
+    ( { isChecked = True
+      , toDos =
+            [ { isDone = True, label = "Chckbox in Elm" }
+            , { isDone = False, label = "Render a list of items" }
+            , { isDone = False, label = "Adding new items" }
+            ]
+      }
+    , Cmd.none
+    )
 
 
 
@@ -36,11 +52,20 @@ update msg model =
 ---- VIEW ----
 
 
+renderTodo : ToDo -> Html Msg
+renderTodo toDo =
+    div []
+        [ input [ type_ "checkbox", checked toDo.isDone ] []
+        , text toDo.label
+        ]
+
+
 view : Model -> Html Msg
 view model =
     div [ class "container" ]
         [ input [ type_ "checkbox", onClick ToggleIsChecked, checked model.isChecked ] []
         , text "Do the thing"
+        , div [ class "todos" ] [ ul [] (List.map renderTodo model.toDos) ]
         ]
 
 
