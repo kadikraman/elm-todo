@@ -13,15 +13,10 @@ img {
 }
 
 .container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: center;
   margin: 50px;
 }
 
 .todos {
-  margin: 20px;
   text-align: left;
 }
 
@@ -30,4 +25,20 @@ img {
   user-select: none;
   display: flex;
   align-items: center;
+}
+
+.inputs {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.title {
+  font-size: 50px;
+  margin-bottom: 100px;
+}
+
+.checkbox {
+  margin-right: 10px;
+  cursor: pointer;
 }

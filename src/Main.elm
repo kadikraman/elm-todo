@@ -1,8 +1,9 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, img, input, ul, button)
-import Html.Attributes exposing (src, type_, checked, class, value)
-import Html.Events exposing (onClick, onInput)
+import Html exposing (Html, text, div, img, input, ul, button, form, Attribute)
+import Html.Attributes exposing (src, type_, checked, class, value, classList, placeholder)
+import Html.Events exposing (onClick, onInput, keyCode, on)
+import Json.Decode as Json
 
 
 ---- MODEL ----
@@ -42,6 +43,7 @@ type Msg
     = ToggleIsDone Int
     | AddToDo
     | UpdateText String
+    | KeyDown Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -54,18 +56,26 @@ update msg model =
             ( { model | text = text }, Cmd.none )
 
         AddToDo ->
-            ( { model
-                | toDos =
-                    List.append model.toDos
-                        [ { id = List.length model.toDos
-                          , label = model.text
-                          , isDone = False
-                          }
-                        ]
-                , text = ""
-              }
-            , Cmd.none
-            )
+            ( addTodo model, Cmd.none )
+
+        KeyDown key ->
+            if key == 13 then
+                ( addTodo model, Cmd.none )
+            else
+                ( model, Cmd.none )
+
+
+addTodo model =
+    { model
+        | toDos =
+            List.append model.toDos
+                [ { id = List.length model.toDos
+                  , label = model.text
+                  , isDone = False
+                  }
+                ]
+        , text = ""
+    }
 
 
 toggle : Int -> ToDo -> ToDo
@@ -76,6 +86,11 @@ toggle id todo =
         todo
 
 
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.map tagger keyCode)
+
+
 
 ---- VIEW ----
 
@@ -83,16 +98,22 @@ toggle id todo =
 renderTodo : ToDo -> Html Msg
 renderTodo toDo =
     div [ onClick (ToggleIsDone toDo.id), class "todo" ]
-        [ input [ type_ "checkbox", checked toDo.isDone ] []
+        [ input [ type_ "checkbox", checked toDo.isDone, class "checkbox" ] []
         , text toDo.label
         ]
 
 
 view : Model -> Html Msg
 view model =
-    div [ class "container" ]
-        [ div [] [ input [ onInput UpdateText, value model.text ] [], button [ onClick AddToDo ] [ text "Add ToDo" ] ]
-        , div [ class "todos" ] [ ul [] (List.map renderTodo model.toDos) ]
+    div [ classList [ ( "pure-g", True ), ( "container", True ) ] ]
+        [ div [ classList [ ( "pure-u-1", True ), ( "title", True ) ] ] [ text "Stuff that needs doing" ]
+        , div [ classList [ ( "pure-u-1-2", True ), ( "inputs", True ) ] ]
+            [ div [ classList [ ( "pure-form", True ), ( "pure-form-stacked", True ) ] ]
+                [ input [ onInput UpdateText, value model.text, placeholder "I need to...", type_ "text", onKeyDown KeyDown ] []
+                , button [ onClick AddToDo, classList [ ( "pure-button", True ), ( "pure-button-primary", True ) ], type_ "button" ] [ text "Add ToDo" ]
+                ]
+            ]
+        , div [ class "pure-u-1-2" ] [ div [] (List.map renderTodo model.toDos) ]
         ]
 
 
