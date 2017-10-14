@@ -1,8 +1,8 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, img, input, ul)
-import Html.Attributes exposing (src, type_, checked, class)
-import Html.Events exposing (onClick)
+import Html exposing (Html, text, div, img, input, ul, button)
+import Html.Attributes exposing (src, type_, checked, class, value)
+import Html.Events exposing (onClick, onInput)
 
 
 ---- MODEL ----
@@ -16,13 +16,15 @@ type alias ToDo =
 
 
 type alias Model =
-    { toDos : List ToDo
+    { text : String
+    , toDos : List ToDo
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { toDos =
+    ( { text = ""
+      , toDos =
             [ { id = 0, isDone = True, label = "Chckbox in Elm" }
             , { id = 1, isDone = False, label = "Render a list of items" }
             , { id = 2, isDone = False, label = "Adding new items" }
@@ -38,6 +40,8 @@ init =
 
 type Msg
     = ToggleIsDone Int
+    | AddToDo
+    | UpdateText String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,7 +50,25 @@ update msg model =
         ToggleIsDone id ->
             ( { model | toDos = List.map (toggle id) model.toDos }, Cmd.none )
 
+        UpdateText text ->
+            ( { model | text = text }, Cmd.none )
 
+        AddToDo ->
+            ( { model
+                | toDos =
+                    List.append model.toDos
+                        [ { id = List.length model.toDos
+                          , label = model.text
+                          , isDone = False
+                          }
+                        ]
+                , text = ""
+              }
+            , Cmd.none
+            )
+
+
+toggle : Int -> ToDo -> ToDo
 toggle id todo =
     if (todo.id == id) then
         { todo | isDone = not todo.isDone }
@@ -69,7 +91,8 @@ renderTodo toDo =
 view : Model -> Html Msg
 view model =
     div [ class "container" ]
-        [ div [ class "todos" ] [ ul [] (List.map renderTodo model.toDos) ]
+        [ div [] [ input [ onInput UpdateText, value model.text ] [], button [ onClick AddToDo ] [ text "Add ToDo" ] ]
+        , div [ class "todos" ] [ ul [] (List.map renderTodo model.toDos) ]
         ]
 
 
